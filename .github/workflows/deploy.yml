@@ -52,8 +52,8 @@ jobs:
                 node_modules.zip
                 .yarn
                 .env
-      - name: unzip artifact for deployment
-        run: unzip node_modules.zip  
+     - name: unzip artifact for deployment
+       run: unzip node_modules.zip  
      - name: Run Test
        run: CI=true yarn test
 
