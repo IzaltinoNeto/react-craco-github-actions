@@ -29,12 +29,14 @@ jobs:
           echo REACT_APP_CF_URL_DEV=${{ secrets.REACT_APP_CF_URL_DEV }} >> .env
           echo REACT_APP_FIREBASE_CONFIG_DEV=${{ secrets.FIREBASE_CONFIG_DEV }} >> .env
           echo REACT_APP_STORAGE_URL_DEV=${{ secrets.STORAGE_URL_DEV }} >> .env
+      - name: Zip artifact for deployment
+        run: zip node_modules.zip ./node_modules -r
       - name: Archive production artifact
         uses: actions/upload-artifact@v3
         with:
           name: node_modules
           path: |
-                node_modules
+                node_modules.zip
                 .yarn
                 .env 
   automated_tests:
@@ -47,9 +49,11 @@ jobs:
        with:        
          name: node_modules
          path: |
-                node_modules
+                node_modules.zip
                 .yarn
-                .env  
+                .env
+      - name: unzip artifact for deployment
+        run: unzip node_modules.zip  
      - name: Run Test
        run: CI=true yarn test
 
