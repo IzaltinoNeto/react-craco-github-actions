@@ -43,13 +43,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:        
-          name: node_modules
-          path: |
+       uses: actions/download-artifact@v3
+       with:        
+         name: node_modules
+         path: |
                 node_modules
                 .yarn
                 .env  
-      - name: Run Test
-        run: CI=true yarn test
+     - name: Run Test
+       run: CI=true yarn test
 
