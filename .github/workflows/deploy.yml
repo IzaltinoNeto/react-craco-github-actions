@@ -1,0 +1,55 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  install_dependencies:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --cache-folder .yarn
+      - name: Create env file
+        run:  |  
+          echo REACT_APP_BASE_URL_DEV=${{ secrets.REACT_APP_BASE_URL_DEV }} >> .env
+          echo REACT_APP_CF_URL_DEV=${{ secrets.REACT_APP_CF_URL_DEV }} >> .env
+          echo REACT_APP_FIREBASE_CONFIG_DEV=${{ secrets.FIREBASE_CONFIG_DEV }} >> .env
+          echo REACT_APP_STORAGE_URL_DEV=${{ secrets.STORAGE_URL_DEV }} >> .env
+      - name: Archive production artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: node_modules
+          path: |
+                node_modules
+                .yarn
+                .env 
+  automated_tests:
+    name: Tests
+    needs: install_dependencies
+    runs-on: ubuntu-latest
+    steps:
+     - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:        
+          name: node_modules
+          path: |
+                node_modules
+                .yarn
+                .env  
+      - name: Run Test
+        run: CI=true yarn test
+
